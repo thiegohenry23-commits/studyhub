@@ -22,11 +22,20 @@ function parseQuestions(text) {
     .map((q, i) => {
       const opts = Array.isArray(q.opts) ? q.opts : Array.isArray(q.options) ? q.options : []
       const correct = Number.isInteger(q.correct) ? q.correct : (typeof q.answer === 'number' ? q.answer : 0)
+      const safeCorrect = Math.max(0, Math.min(opts.length - 1, correct))
+      // Embaralha as alternativas para que a correta não fique sempre em "A"
+      const order = opts.map((_, idx) => idx)
+      for (let j = order.length - 1; j > 0; j--) {
+        const k = Math.floor(Math.random() * (j + 1))
+        ;[order[j], order[k]] = [order[k], order[j]]
+      }
+      const shuffledOpts = order.map((idx) => String(opts[idx]).trim())
+      const newCorrect = order.indexOf(safeCorrect)
       return {
         id: i + 1,
         q: String(q.q || q.question || '').trim(),
-        opts: opts.map((o) => String(o).trim()),
-        correct: Math.max(0, Math.min(opts.length - 1, correct)),
+        opts: shuffledOpts,
+        correct: newCorrect >= 0 ? newCorrect : 0,
         explain: String(q.explain || q.explanation || '').trim()
       }
     })

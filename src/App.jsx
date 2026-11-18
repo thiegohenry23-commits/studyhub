@@ -11,7 +11,6 @@ import { ThemeProvider } from './components/ThemeToggle.jsx'
 const Quiz = lazy(() => import('./pages/Quiz.jsx'))
 const Explore = lazy(() => import('./pages/Explore.jsx'))
 const Simulados = lazy(() => import('./pages/Simulados.jsx'))
-const SimuladosHub = lazy(() => import('./pages/SimuladosHub.jsx'))
 
 function PageFallback() {
   return (
@@ -74,7 +73,6 @@ export default function App() {
                   <Route path="/quiz/:subject" element={<Quiz onOpenChat={() => setChatOpen(true)} />} />
                   <Route path="/explore" element={<Explore />} />
                   <Route path="/simulados" element={<Simulados />} />
-                  <Route path="/simulados-hub" element={<SimuladosHub />} />
                 </Routes>
               </motion.div>
             </AnimatePresence>

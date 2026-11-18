@@ -93,15 +93,18 @@ export default function Hero() {
           className="mt-10 flex flex-wrap items-center gap-4"
         >
           <Link
-            to="/reading/Matemática"
+            to="/explore"
             className="group inline-flex items-center gap-2 px-7 py-4 rounded-2xl font-semibold bg-white text-ink-950 hover:scale-[1.02] transition-transform"
           >
             Começar agora
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
-          <button className="inline-flex items-center gap-2 px-7 py-4 rounded-2xl font-semibold glass hover:bg-white/10 transition-colors">
+          <Link
+            to="/quiz/Matemática"
+            className="inline-flex items-center gap-2 px-7 py-4 rounded-2xl font-semibold glass hover:bg-white/10 transition-colors"
+          >
             <Play className="w-4 h-4" /> Ver demonstração
-          </button>
+          </Link>
         </motion.div>
 
         <motion.div

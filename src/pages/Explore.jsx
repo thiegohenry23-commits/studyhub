@@ -5,8 +5,6 @@ import { Search, Sparkles, Play, Loader2, BookOpen, Youtube } from 'lucide-react
 import Skeleton from '../components/Skeleton.jsx'
 import { useToast } from '../components/Toast.jsx'
 
-const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
-const GROQ_MODEL = 'openai/gpt-oss-20b'
 
 export default function Explore() {
   const [searchParams] = useSearchParams()
@@ -21,39 +19,24 @@ export default function Explore() {
   const [playingId, setPlayingId] = React.useState(null)
 
   const fetchAI = async (t) => {
-    const clientKey = import.meta.env.VITE_GROQ_API_KEY
     const messages = [
       { role: 'system', content: 'Você é um tutor de estudos. Explique o assunto solicitado de forma clara, didática e em português do Brasil. Use tópicos e exemplos curtos. Até ~200 palavras.' },
       { role: 'user', content: `Explique o assunto: ${t}` }
     ]
-    let res
-    if (clientKey) {
-      res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${clientKey}` },
-        body: JSON.stringify({ model: 'openai/gpt-oss-20b', messages, temperature: 0.7, max_tokens: 1024 })
-      })
-    } else {
-      res = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages, temperature: 0.7, max_tokens: 1024 })
-      })
-    }
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages, temperature: 0.7, max_tokens: 1024 })
+    })
+
     if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
     const data = await res.json()
     return data?.choices?.[0]?.message?.content?.trim() || 'Sem resposta.'
   }
 
   const fetchVideos = async (t) => {
-    const clientKey = import.meta.env.VITE_YOUTUBE_API_KEY
-    let res
-    if (clientKey) {
-      const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(t + ' aula')}&type=video&maxResults=6&key=${clientKey}`
-      res = await fetch(url)
-    } else {
-      res = await fetch(`/api/youtube?q=${encodeURIComponent(t + ' aula')}&maxResults=6`)
-    }
+    const res = await fetch(`/api/youtube?q=${encodeURIComponent(t + ' aula')}&maxResults=6`)
+
     if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
     const data = await res.json()
     return (data.items || []).map((it) => ({

@@ -2,8 +2,6 @@ import React from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, Sparkles, Bot, User } from 'lucide-react'
 
-const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
-const GROQ_MODEL = 'openai/gpt-oss-20b'
 const SYSTEM_PROMPT = `Você é um tutor de estudos amigável, didático e paciente. Responda em português do Brasil.
 Simplifique conceitos, use exemplos claros e curtos. Se o aluno errar, corrija com gentileza.
 Mantenha respostas concisas (até ~120 palavras) e focadas no aprendizado.`
@@ -35,23 +33,13 @@ export default function ChatAI({ open, onClose }) {
         ...nextMessages.map((m) => ({ role: m.role, content: m.text }))
       ]
 
-      const clientKey = import.meta.env.VITE_GROQ_API_KEY
-      let res
-      if (clientKey) {
-        // Dev local com chave exposta (não usado em produção)
-        res = await fetch(GROQ_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${clientKey}` },
-          body: JSON.stringify({ model: GROQ_MODEL, messages: apiMessages, temperature: 0.7, max_tokens: 1024 })
-        })
-      } else {
-        // Produção: proxy serverless (chave fica no servidor)
-        res = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: apiMessages, temperature: 0.7, max_tokens: 1024 })
-        })
-      }
+      // Produção: proxy serverless (chave fica no servidor)
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: apiMessages, temperature: 0.7, max_tokens: 1024 })
+      })
+
 
       if (!res.ok) {
         const errText = await res.text()

@@ -5,8 +5,6 @@ import { Brain, Sparkles, Loader2, CheckCircle2, XCircle, RotateCcw, Play, Targe
 import { toggleFavorite, isFavorite, getFavorites, removeFavorite } from '../lib/favorites.js'
 import { useToast } from '../components/Toast.jsx'
 
-const GROQ_URL = 'https://api.groq.com/openai/v1/chat/completions'
-const GROQ_MODEL = 'openai/gpt-oss-20b'
 
 function parseQuestions(text) {
   // Remove cercas de código markdown se houver
@@ -66,7 +64,6 @@ export default function Quiz() {
     setMode('loading')
     setLoadingMsg('Gerando questões com IA...')
     try {
-      const clientKey = import.meta.env.VITE_GROQ_API_KEY
       const messages = [
         {
           role: 'system',
@@ -79,20 +76,12 @@ export default function Quiz() {
         }
       ]
 
-      let res
-      if (clientKey) {
-        res = await fetch(GROQ_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${clientKey}` },
-          body: JSON.stringify({ model: GROQ_MODEL, messages, temperature: 0.8, max_tokens: 2000 })
-        })
-      } else {
-        res = await fetch('/api/chat', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages, temperature: 0.8, max_tokens: 2000 })
-        })
-      }
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages, temperature: 0.8, max_tokens: 2000 })
+      })
+
 
       if (!res.ok) {
         const txt = await res.text()
